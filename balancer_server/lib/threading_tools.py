@@ -41,7 +41,7 @@ def locked_writer(func):
 def rw_locked_struct(cls):
     def wrapper(*args, **kwargs):
         instance = cls(*args, **kwargs)
-        setattr(instance, "__reader_lock__", MultiLock())
-        setattr(instance, "__writer_lock__", RLock())
+        setattr(instance, "__read_lock__", MultiLock())
+        setattr(instance, "__write_lock__", RLock())
         return instance
     return wrapper
