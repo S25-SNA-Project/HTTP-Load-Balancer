@@ -9,6 +9,6 @@ communicator = FastAPI()
 @communicator.post("/finish")
 async def handle_finish(request: Request):
     server_ip = request.client.host
-    servers_queue[server_ip] = servers_queue[server_ip].load - 1
+    await servers_queue.update_load(server_ip, max(servers_queue[server_ip].load - 1, 0))
     return Response(status_code=200, content=f"{server_ip}")
 

@@ -44,7 +44,7 @@ class ServersHeap:
         return self.heap[idx]
 
     @locked_writer
-    def __setitem__(self, ip: str, new_load: int) -> None:
+    def update_load(self, ip: str, new_load: int) -> None:
         if ip not in self.keymap:
             raise KeyError(f"{ip!r} is not in the heap.")
         idx = self.keymap[ip]
