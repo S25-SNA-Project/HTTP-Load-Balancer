@@ -11,7 +11,7 @@ async def catch_all(request: Request, full_path: str):
         optimal_node = servers_queue.peek()
         ack = await aRequest(
             "POST",
-            f"http://{optimal_node[1]}", 
+            f"http://{optimal_node.ip}", 
             data={"client_ip": request.client.host}, 
             timeout=.1
         )
@@ -20,6 +20,6 @@ async def catch_all(request: Request, full_path: str):
             continue
         break
     servers_queue.update_root(ack.data["load"])
-    return RedirectResponse(optimal_node[1] + "/" + full_path, status_code=307)
+    return RedirectResponse(optimal_node.ip + full_path, status_code=307)
 
 
