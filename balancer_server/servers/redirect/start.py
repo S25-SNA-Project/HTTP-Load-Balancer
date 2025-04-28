@@ -1,27 +1,34 @@
-import time
-from threading import Thread
+import asyncio
+import signal
 
 from uvicorn import Config, Server
 from lib.config_reader import config
 from servers.redirect.reverse_proxy import reverse_proxy
 from servers.redirect.servers_communicator import communicator
 
-def start():
-    server1 = Server(Config(reverse_proxy, port=config["exposed_port"]))
-    server2 = Server(Config(communicator, port=config["balancing_port"]))
+async def serve(app, port):
+    server = Server(Config(app, port=port))
+    await server.serve()
 
-    t1 = Thread(target=server1.run, daemon=True)
-    t2 = Thread(target=server2.run, daemon=True)
+async def main():
+    tasks = [
+        asyncio.create_task(serve(reverse_proxy, config["exposed_port"])),
+        asyncio.create_task(serve(communicator, config["balancing_port"]))
+    ]
 
-    t1.start()
-    t2.start()
+    loop = asyncio.get_running_loop()
+    stop = loop.create_future()
 
-    try:
-        while True: time.sleep(1000)
-    except KeyboardInterrupt:
-        print("Shutdown requested, stopping servers…")
-        server1.should_exit = True
-        server2.should_exit = True
-        t1.join()
-        t2.join()
-        print("✅ Servers stopped")
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig, stop.set_result, None)
+
+    await stop  # wait until one of the signals arrives
+    print("Shutdown requested, stopping servers…")
+
+    for t in tasks:
+        t.cancel()
+    await asyncio.gather(*tasks, return_exceptions=True)
+    print("✅ Servers stopped")
+
+if __name__ == "__main__":
+    asyncio.run(main(), debug=False)

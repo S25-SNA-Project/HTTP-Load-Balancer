@@ -1,5 +1,4 @@
-from threading import RLock
-from lib.threading_tools import (
+from balancer_server.lib.threading_tools.rw_decorator import (
     locked_reader,
     locked_writer,
     rw_locked_struct,
@@ -7,11 +6,11 @@ from lib.threading_tools import (
 
 
 class LoadNode:
-    def __init__(self, load, ip):
+    def __init__(self, load: int, ip: str):
         self.load = load
         self.ip = ip
 
-    def __lt__(self, other):
+    def __lt__(self, other: any):
         return self.load < other.load
 
     def __repr__(self):
@@ -38,14 +37,14 @@ class ServersHeap:
         return str(self.heap)
 
     @locked_reader
-    def __getitem__(self, ip) -> LoadNode:
+    def __getitem__(self, ip: str) -> LoadNode:
         if ip not in self.keymap:
             raise KeyError(f"{ip!r} is not in the heap.")
         idx = self.keymap[ip]
         return self.heap[idx]
 
     @locked_writer
-    def __setitem__(self, ip, new_load) -> None:
+    def __setitem__(self, ip: str, new_load: int) -> None:
         if ip not in self.keymap:
             raise KeyError(f"{ip!r} is not in the heap.")
         idx = self.keymap[ip]
@@ -59,7 +58,7 @@ class ServersHeap:
         return self.heap[0]
 
     @locked_writer
-    def push(self, ip, load=0) -> None:
+    def push(self, ip: str, load: int=0) -> None:
         if ip in self.keymap:
             raise KeyError(f"{ip!r} is already in the heap.")
         idx = len(self.heap)
@@ -75,14 +74,13 @@ class ServersHeap:
         last = self.heap.pop()
         del self.keymap[root.ip]
         if self.heap:
-            # move last to root
             self.heap[0] = last
             self.keymap[last.ip] = 0
             self._heapify_down(0)
         return root
 
     @locked_writer
-    def update_root(self, new_load) -> None:
+    def update_root(self, new_load: int) -> None:
         if not self.heap:
             raise IndexError("update_root from empty heap")
         self.heap[0].load = new_load
