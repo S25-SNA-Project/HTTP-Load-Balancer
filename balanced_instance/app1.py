@@ -1,8 +1,5 @@
-from typing import Union
-
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -12,10 +9,6 @@ counter = 0
 async def read_root():
     return "<h1>Hello world</h1>"
 
-@app.get("/load")
-def get_load():
-    return {counter}
-
 @app.get("/prime")
 def add_numbers(a: int):
     cnt = 0
@@ -23,8 +16,4 @@ def add_numbers(a: int):
         if a % i == 0:
             cnt += 1
     return {"result": cnt}
-
-@app.get("/subtract")
-def subtract_numbers(a: int, b: int):
-    return {"result": a - b}
 
