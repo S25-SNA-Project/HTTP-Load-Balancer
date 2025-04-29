@@ -1,10 +1,18 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import Response
-from lib.config_reader import servers_queue
+from fastapi.middleware.cors import CORSMiddleware
+from lib.config_reader import servers_queue, config
 from aiohttp.client import request as aRequest
 from uvicorn import run
 
 communicator = FastAPI()
+communicator.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://" + x for x in config['servers']] + ["https://" + x for x in config['servers']],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @communicator.post("/finish")
 async def handle_finish(request: Request):

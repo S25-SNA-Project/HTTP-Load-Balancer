@@ -1,5 +1,5 @@
 from asyncio import Lock
-from MultiLock import MultiLock
+from .MultiLock import MultiLock
 
 def locked_reader(func):
     async def wrapper(self, *args, **kwargs):
@@ -7,16 +7,16 @@ def locked_reader(func):
             await self.__read_lock__.acquire(blocking=False)
             try:    
                 # in general case function call should be awaited, but our heap - not asynchronous by itself       
-                res = func(*args, **kwargs)
+                res = func(self, *args, **kwargs)
+                return res
             finally:
                 self.__read_lock__.release()
-                return res
     return wrapper
 
 def locked_writer(func):
     async def wrapper(self, *args, **kwargs):
         async with self.__read_lock__, self.__write_lock__:
-            return func(*args, **kwargs)
+            return func(self, *args, **kwargs)
     return wrapper
 
 def rw_locked_struct(cls):

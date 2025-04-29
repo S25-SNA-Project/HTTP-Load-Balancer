@@ -5,12 +5,14 @@ from uvicorn import Config, Server
 from lib.config_reader import config
 from servers.redirect.reverse_proxy import reverse_proxy
 from servers.redirect.servers_communicator import communicator
+from lib.config_reader import configure_queue
 
 async def serve(app, port):
     server = Server(Config(app, port=port))
     await server.serve()
 
 async def main():
+    await configure_queue()  
     tasks = [
         asyncio.create_task(serve(reverse_proxy, config["exposed_port"])),
         asyncio.create_task(serve(communicator, config["balancing_port"]))
@@ -30,5 +32,5 @@ async def main():
     await asyncio.gather(*tasks, return_exceptions=True)
     print("✅ Servers stopped")
 
-if __name__ == "__main__":
+def start():
     asyncio.run(main(), debug=False)

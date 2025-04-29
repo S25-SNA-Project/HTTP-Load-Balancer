@@ -1,4 +1,4 @@
-from balancer_server.lib.threading_tools.rw_decorator import (
+from lib.threading_tools.rw_decorator import (
     locked_reader,
     locked_writer,
     rw_locked_struct,
