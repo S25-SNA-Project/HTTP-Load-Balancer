@@ -20,9 +20,9 @@ app.mount(
 
 counter = 0
 
-@app.get("/", response_class=HTMLResponse)
-async def read_root():
-    return "<h1>Hello world</h1>"
+@app.get("/")
+async def read_root() -> HTMLResponse:
+    return HTMLResponse('\n'.join(open("./static/hello_w.html", 'r').readlines()))
 
 @app.get("/media_example")
 async def media_example():

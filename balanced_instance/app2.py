@@ -1,7 +1,7 @@
 import json
 
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi import FastAPI, Request, HTTPException, Response
+from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import asyncio
@@ -49,8 +49,9 @@ async def proxy(full_path: str, _request: Request):
     logger.info(f"Client request [{_request.method} {full_path}] from {_request.client.host}")
     if str(_request.client.host).split(':')[0] not in active_waiting_clients:
         logger.error(f"Request from {str(_request.client.host).split(':')[0]} is not awaited. Redirect to be balanced.")
+        # TODO: make port configurable
         return RedirectResponse(
-            f"http://{BALANCER_ADDR}/{full_path.lstrip('/')}",
+            f"http://{BALANCER_ADDR.split(":")[0]}:8001/{full_path.lstrip('/')}",
             status_code=307,
         )
     async with lock:
@@ -65,10 +66,10 @@ async def proxy(full_path: str, _request: Request):
 
             params = dict(_request.query_params)
             response = await client.request(method, url, headers=headers, content=body, params=params)
-            res = JSONResponse(
+            res = Response(
                 status_code=response.status_code,
-                content=response.json() if "application/json" in response.headers.get("content-type", "") else {
-                    "response": response.text},
+                content=response.text,
+                headers=response.headers
             )
         logger.info(f"Response from {APPLICATION_PORT} obtained. Transmitting information about end to the balancer.")
         async with httpx.AsyncClient(timeout=None) as client:
@@ -92,5 +93,6 @@ if __name__ == "__main__":
     logger.info(f"Connected to balancer at {BALANCER_ADDR}.")
     run(
         app,
+        host="0.0.0.0",
         port=BALANCER_PORT
     )
