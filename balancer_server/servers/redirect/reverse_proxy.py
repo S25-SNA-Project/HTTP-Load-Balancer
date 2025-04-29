@@ -24,7 +24,6 @@ async def catch_all(request: Request, full_path: str):
         optimal_node = await servers_queue.peek()
         try:
             async with ClientSession() as session:
-                print(f"http://{optimal_node.ip}/tasks_count")
                 ack = await session.request(
                     "POST",
                     # "GET",

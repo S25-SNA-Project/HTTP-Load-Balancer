@@ -39,7 +39,7 @@ class ServersHeap:
     @locked_reader
     def __getitem__(self, ip: str) -> LoadNode:
         if ip not in self.keymap:
-            raise KeyError(f"{ip!r} is not in the heap.")
+            raise KeyError(f"{ip} is not in the heap.")
         idx = self.keymap[ip]
         return self.heap[idx]
 

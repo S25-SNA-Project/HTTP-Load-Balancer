@@ -77,8 +77,6 @@ async def proxy(full_path: str, _request: Request):
             )
         logger.info(f"Response from {APPLICATION_PORT} sent to the client.")
         return res
-    except:
-        print(full_path)
     finally:
         async with lock:
             active_tasks -= 1

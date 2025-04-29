@@ -30,8 +30,8 @@ async def handle_finish(request: Request):
         return Response(status_code=403, content=f"{server_ip} is not registered as a worker")
     addr = config['servers'][addr]
     # end of temporary fix
-    await servers_queue.update_load(server_ip, max((await servers_queue[addr]).load - 1, 0))
-    return Response(status_code=200, content=f"{server_ip}")
+    await servers_queue.update_load(addr, max((await servers_queue[addr]).load - 1, 0))
+    return Response(status_code=200, content=f"OK")
 
 @communicator.post("/connect")
 async def handle_connect(request: Request):

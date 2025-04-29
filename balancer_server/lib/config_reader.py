@@ -21,5 +21,5 @@ servers_queue: ServersHeap = ServersHeap()
 async def configure_queue():
     for server in config["servers"]:
         await servers_queue.push(server, 0)
-    print(config)
-    print(servers_queue)
+    logger.info(f"Servers queue configured with {len(servers_queue)} servers.")
+    logger.info(f"Servers queue: {servers_queue}")
