@@ -1,5 +1,7 @@
 import argparse
 import json
+from os import getenv
+
 from logging import getLogger, INFO, StreamHandler, Formatter
 
 parser = argparse.ArgumentParser(
@@ -39,6 +41,8 @@ if args.application_port:
     config["application_port"] = args.application_port
 if args.balancer_addr:
     config["balancing_address"] = args.balancer_addr
+if getenv("balancer-addr", None) is not None:
+    config["balancing_address"] = getenv("balancer-addr", None)
 if args.balanced_port:
     config["balanced_port"] = args.balanced_port
 BALANCER_ADDR = config["balancing_address"]

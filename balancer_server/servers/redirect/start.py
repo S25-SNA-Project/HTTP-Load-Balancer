@@ -8,7 +8,7 @@ from servers.redirect.servers_communicator import communicator
 from lib.config_reader import configure_queue
 
 async def serve(app, port):
-    server = Server(Config(app, port=port))
+    server = Server(Config(app, host="0.0.0.0", port=port))
     await server.serve()
 
 async def main():
