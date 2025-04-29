@@ -1,11 +1,10 @@
-from lib.config_reader import logger
-from json import loads
-from aiohttp import ClientConnectorError, ClientTimeout
-from fastapi import FastAPI, Request
+from aiohttp import ClientSession, ClientTimeout, ClientConnectorError
+from asyncio import TimeoutError
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
-from lib.config_reader import servers_queue
-from aiohttp import ClientSession
+from json import loads
+from lib.config_reader import logger, servers_queue
 
 reverse_proxy = FastAPI()
 reverse_proxy.add_middleware(
@@ -16,31 +15,38 @@ reverse_proxy.add_middleware(
     allow_headers=["*"],
 )
 
+
+@reverse_proxy.get("/favicon.ico", include_in_schema=False)
+async def no_favicon():
+    return Response(status_code=204)
+
+
 @reverse_proxy.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
 async def catch_all(request: Request, full_path: str):
     logger.info(f"Client request to {request.method} {full_path} from {request.client.host}")
 
-    while True:
-        optimal_node = await servers_queue.peek()
-        try:
-            async with ClientSession() as session:
-                ack = await session.request(
-                    "POST",
-                    # "GET",
-                    f"http://{optimal_node.ip}/tasks_count", 
-                    json={"client_ip": str(request.client.host).split(':')[0]},
-                    timeout=ClientTimeout(total=1),
-                )
-            # if ack.status > 300:
-            #     await servers_queue.pop()
-            #     continue
-        except ClientConnectorError:
-            logger.error(f"Server {optimal_node.ip} is down, removing from queue. Trying next instance.")
-            await servers_queue.pop()
-            continue
-        break
-    await servers_queue.update_root(loads(await ack.text())["active_tasks"] + 1)
+    timeout = ClientTimeout(total=5) 
+    async with ClientSession(timeout=timeout) as session:
+        while True:
+            optimal_node = await servers_queue.peek()
+            url = f"http://{optimal_node.ip}/tasks_count"
+            try:
+                async with session.post(
+                    url,
+                    json={"client_ip": request.client.host},
+                ) as resp:
+                    resp.raise_for_status()
+                    data = await resp.json()
+            except (ClientConnectorError, TimeoutError):
+                logger.error(f"Server {optimal_node.ip} down, pop and retry")
+                await servers_queue.pop()
+                continue
+            except Exception as e:
+                body = await resp.text() if 'resp' in locals() else "<no response>"
+                raise RuntimeError(f"Error getting tasks_count from {url}: {e}, body={body!r}")
+            await servers_queue.update_root(data["active_tasks"] + 1)
+            break
+
     logger.info(f"Redirecting to {optimal_node.ip}")
-    return RedirectResponse(f"http://{optimal_node.ip}/{full_path.lstrip('/')}?{'&'.join(f'{k}={request.query_params[k]}' for k in request.query_params)}", status_code=307)
-
-
+    qs = "&".join(f"{k}={v}" for k, v in request.query_params.items())
+    return RedirectResponse(f"http://{optimal_node.ip}/{full_path.lstrip('/')}?{qs}", status_code=307)
