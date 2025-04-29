@@ -44,7 +44,7 @@ async def handle_connect(request: Request):
         logger.error(f"Malformed register request from {server_ip}")
         return Response(status_code=400, content="Port not specified")
     server_addr = f"{server_ip}:{server_port}"
-    servers_queue.push(server_addr, 0)
+    await servers_queue.push(server_addr, 0)
     config['servers'].append(server_addr)
 
     logger.info(f"Successfully register request-handling instance located on {request.client.host}")
