@@ -1,5 +1,4 @@
 import json
-from http.cookiejar import escape_path
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -85,7 +84,7 @@ if __name__ == "__main__":
             f"http://{BALANCER_ADDR}/connect",
             params={"port": BALANCER_PORT},
         )
-        
+
     run(
         app,
         port=BALANCER_PORT

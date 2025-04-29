@@ -6,7 +6,6 @@ from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from lib.config_reader import servers_queue
 from aiohttp import ClientSession
-from aiohttp.client import request as aRequest
 
 reverse_proxy = FastAPI()
 reverse_proxy.add_middleware(

@@ -2,8 +2,6 @@ from fastapi import FastAPI, Request
 from fastapi.responses import Response
 from fastapi.middleware.cors import CORSMiddleware
 from lib.config_reader import servers_queue, config
-from aiohttp.client import request as aRequest
-from uvicorn import run
 
 communicator = FastAPI()
 communicator.add_middleware(
