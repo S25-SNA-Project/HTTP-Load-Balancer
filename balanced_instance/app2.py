@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import asyncio
 from uvicorn import run
-from config import BALANCER_ADDR, APPLICATION_PORT, BALANCER_PORT
+from config import BALANCER_ADDR, APPLICATION_PORT, BALANCER_PORT, logger
 
 
 app = FastAPI()
@@ -24,7 +24,9 @@ lock = asyncio.Lock()
 
 @app.post("/tasks_count")
 async def tasks_count(request: Request):
+    logger.info(f"Request to /tasks_count from {request.client.host}")
     if str(request.client.host).split(':')[0] != BALANCER_ADDR.split(':')[0]:
+        logger.error(f"Request to /tasks_count from {request.client.host} is not from the proxy server.")
         raise HTTPException(
             status_code=403,
             detail="This endpoint is only accessible from the proxy server.",
@@ -35,6 +37,8 @@ async def tasks_count(request: Request):
     client_ip = data.get("client_ip")
 
     active_waiting_clients.add(client_ip)
+
+    logger.info(f"Client {client_ip} successfully registered and added to the await queue.")
     return {"active_tasks": active_tasks}
 
 
@@ -42,7 +46,9 @@ async def tasks_count(request: Request):
 @app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
 async def proxy(full_path: str, _request: Request):
     global active_tasks
+    logger.info(f"Client request [{_request.method} {full_path}] from {_request.client.host}")
     if str(_request.client.host).split(':')[0] not in active_waiting_clients:
+        logger.error(f"Request from {str(_request.client.host).split(':')[0]} is not awaited. Redirect to be balanced.")
         return RedirectResponse(
             f"http://{BALANCER_ADDR}/{full_path.lstrip('/')}",
             status_code=307,
@@ -64,18 +70,19 @@ async def proxy(full_path: str, _request: Request):
                 content=response.json() if "application/json" in response.headers.get("content-type", "") else {
                     "response": response.text},
             )
-
+        logger.info(f"Response from {APPLICATION_PORT} obtained. Transmitting information about end to the balancer.")
         async with httpx.AsyncClient(timeout=None) as client:
             await client.post(
                 f"http://{BALANCER_ADDR}/finish",
             )
-
+        logger.info(f"Response from {APPLICATION_PORT} sent to the client.")
         return res
     except:
         print(full_path)
     finally:
         async with lock:
             active_tasks -= 1
+            active_waiting_clients.remove(str(_request.client.host).split(':')[0])
 
 
 if __name__ == "__main__":
@@ -84,7 +91,7 @@ if __name__ == "__main__":
             f"http://{BALANCER_ADDR}/connect",
             params={"port": BALANCER_PORT},
         )
-
+    logger.info(f"Connected to balancer at {BALANCER_ADDR}.")
     run(
         app,
         port=BALANCER_PORT
