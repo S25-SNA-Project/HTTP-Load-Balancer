@@ -80,6 +80,12 @@ async def proxy(full_path: str, _request: Request):
 
 
 if __name__ == "__main__":
+    with httpx.Client() as client:
+        client.post(
+            f"http://{BALANCER_ADDR}/connect",
+            params={"port": BALANCER_PORT},
+        )
+        
     run(
         app,
         port=BALANCER_PORT
