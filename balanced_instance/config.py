@@ -1,5 +1,6 @@
 import argparse
 import json
+from logging import getLogger, INFO, StreamHandler, Formatter
 
 parser = argparse.ArgumentParser(
     description="FastAPI proxy (you can override application_port on the CLI)"
@@ -31,7 +32,9 @@ parser.add_argument(
 args, _ = parser.parse_known_args()
 
 
-config = json.load(open(args.config_file))
+with open(args.config_file, "r") as file:
+    config = json.load(file)
+
 if args.application_port:
     config["application_port"] = args.application_port
 if args.balancer_addr:
@@ -41,3 +44,14 @@ if args.balanced_port:
 BALANCER_ADDR = config["balancing_address"]
 APPLICATION_PORT = config["application_port"]
 BALANCER_PORT = config["balanced_port"]
+
+chanel = StreamHandler(open(config["log_file"], "a"))
+chanel.setFormatter(Formatter(
+            "[%(asctime)s] %(name)s %(levelname)s: %(message)s",
+            datefmt="%Y-%m-%d %H:%M:%S"
+        ))
+chanel.setLevel(INFO)
+
+logger = getLogger("custom_logger")
+logger.setLevel(INFO)
+logger.addHandler(chanel)
