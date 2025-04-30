@@ -4,3 +4,4 @@ venv
 __pycache__
 test.py
 *.logs
+balanced_instance/static/html/hello.html
