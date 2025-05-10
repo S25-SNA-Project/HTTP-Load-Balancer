@@ -31,3 +31,4 @@ jobs:
             - name: Run specific test file
               run: |
                   PYTHONPATH=$PYTHONPATH:. pytest tests/test_app1.py -v
+                  PYTHONPATH=$PYTHONPATH:. pytest tests/test_app2.py -v

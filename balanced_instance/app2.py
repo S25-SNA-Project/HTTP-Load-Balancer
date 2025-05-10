@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import asyncio
 from uvicorn import run
-from config import BALANCER_ADDR, APPLICATION_PORT, BALANCER_PORT, logger
+from balanced_instance.config import BALANCER_ADDR, APPLICATION_PORT, BALANCER_PORT, logger
 
 
 app = FastAPI()
@@ -51,7 +51,7 @@ async def proxy(full_path: str, _request: Request):
         logger.error(f"Request from {str(_request.client.host).split(':')[0]} is not awaited. Redirect to be balanced.")
         # TODO: make port configurable
         return RedirectResponse(
-            f"http://{BALANCER_ADDR.split(":")[0]}:8001/{full_path.lstrip('/')}",
+            f"http://{BALANCER_ADDR.split(':')[0]}:8001/{full_path.lstrip('/')}",
             status_code=307,
         )
     async with lock:
