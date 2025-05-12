@@ -52,6 +52,7 @@ jobs:
                 context: balanced_instance
                 file: balanced_instance/Dockerfile
                 push: false
+                load: true
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-service:latest
       
             - name: Build and push load-balancer image
@@ -60,7 +61,16 @@ jobs:
                 context: balancer_server
                 file: balancer_server/Dockerfile
                 push: false
+                load: true
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/load-balancer:latest
+
+            - name: Run backend container
+              run: |
+                docker run -d --name backend1 -p 8888:8888 -p 8080:8080 backend-service
+
+            - name: Run backend container
+              run: |
+                 docker run -d --name load-balancer -p 8000:8000 -p 8001:8001 load-balancer 
       
             - name: Install ApacheBench
               run: |
