@@ -66,11 +66,11 @@ jobs:
 
             - name: Run backend container
               run: |
-                docker run -d --name backend1 -p 8888:8888 -p 8080:8080 backend-service
+                docker run -d --name backend1 -p 8888:8888 -p 8080:8080 backend-service:latest
 
             - name: Run backend container
               run: |
-                 docker run -d --name load-balancer -p 8000:8000 -p 8001:8001 load-balancer 
+                 docker run -d --name load-balancer -p 8000:8000 -p 8001:8001 load-balancer:latest
       
             - name: Install ApacheBench
               run: |
