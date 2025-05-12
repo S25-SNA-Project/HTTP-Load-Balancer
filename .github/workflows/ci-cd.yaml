@@ -49,7 +49,7 @@ jobs:
             - name: Build and push backend-service image
               uses: docker/build-push-action@v5
               with:
-                context: .
+                context: balanced_instance
                 file: balanced_instance/Dockerfile
                 push: false
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-service:latest
@@ -57,7 +57,7 @@ jobs:
             - name: Build and push load-balancer image
               uses: docker/build-push-action@v5
               with:
-                context: .
+                context: balancer_server
                 file: balancer_server/Dockerfile
                 push: false
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/load-balancer:latest
