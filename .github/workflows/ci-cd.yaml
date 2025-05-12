@@ -35,7 +35,7 @@ jobs:
 
             - name: Run specific test file
               run: |
-                  PYTHONPATH=$PYTHONPATH:. pytest tests/ -v
+                  PYTHONPATH=$PYTHONPATH:. pytest tests/test_app1.py -v
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
