@@ -1,6 +1,7 @@
 import argparse
 import json
 from os import getenv
+from pathlib import Path
 
 from logging import getLogger, INFO, StreamHandler, Formatter
 
@@ -10,7 +11,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "--config-file",
     type=str,
-    default="config.json",
+    default=Path(__file__).parent / "config.json",
     help="path to config JSON",
 )
 parser.add_argument(
@@ -48,6 +49,10 @@ if args.balanced_port:
 BALANCER_ADDR = config["balancing_address"]
 APPLICATION_PORT = config["application_port"]
 BALANCER_PORT = config["balanced_port"]
+
+for path_part in Path(config["log_file"]).parents:
+    if not path_part.exists():
+        path_part.mkdir(parents=True, exist_ok=True)
 
 chanel = StreamHandler(open(config["log_file"], "a"))
 chanel.setFormatter(Formatter(
