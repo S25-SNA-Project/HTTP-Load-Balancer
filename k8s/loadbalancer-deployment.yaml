@@ -4,8 +4,6 @@ metadata:
   name: loadbalancer-deployment
 spec:
   replicas: 1
-  nodeSelector:
-    role: balancer
   selector:
     matchLabels:
       app: loadbalancer
@@ -14,6 +12,8 @@ spec:
       labels:
         app: loadbalancer
     spec:
+      nodeSelector:
+        role: balancer
       containers:
       - name: loadbalancer
         image: wkwtfigo/load-balancer:latest

@@ -4,8 +4,7 @@ metadata:
   name: backend-deployment
 spec:
   replicas: 3
-  nodeSelector:
-    role: backend
+  
   selector:
     matchLabels:
       app: backend
@@ -14,6 +13,8 @@ spec:
       labels:
         app: backend
     spec:
+      nodeSelector:
+        role: backend
       containers:
       - name: backend
         image: wkwtfigo/backend-service:latest
