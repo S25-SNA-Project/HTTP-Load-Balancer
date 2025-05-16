@@ -6,8 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import httpx
 import asyncio
 from uvicorn import run
-from config import BALANCER_ADDR, APPLICATION_PORT, BALANCER_PORT, logger
-
+try:
+    from config import BALANCER_ADDR, APPLICATION_PORT, BALANCER_PORT, logger
+except ImportError:
+    from balanced_instance.config import BALANCER_ADDR, APPLICATION_PORT, BALANCER_PORT, logger
 
 app = FastAPI()
 app.add_middleware(
