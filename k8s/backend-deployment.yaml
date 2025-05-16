@@ -4,6 +4,8 @@ metadata:
   name: backend-deployment
 spec:
   replicas: 3
+  nodeSelector:
+    role: backend
   selector:
     matchLabels:
       app: backend
@@ -17,4 +19,11 @@ spec:
         image: wkwtfigo/backend-service:latest
         ports:
         - containerPort: 8080
-        
+        volumeMounts:
+        - name: app-logs
+          mountPath: /app/.logs
+      volumes:
+      - name: app-logs
+        hostPath:
+          path: /var/log/app-redirect-balancer
+          type: DirectoryOrCreate

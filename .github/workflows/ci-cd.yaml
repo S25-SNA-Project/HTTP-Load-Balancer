@@ -64,28 +64,38 @@ jobs:
                 load: true
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/load-balancer:latest
 
-            - name: Run backend container 1
+            - name: Set up kubeconfig
               run: |
-                docker run -d --name backend1 -p 8001:8000 ${{ secrets.DOCKERHUB_USERNAME }}/backend-service:latest
+                echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
+                chmod 600 $HOME/.kube/config
 
-            - name: Run backend container 2
+            - name: Deploy backend, loadbalancer, wazuh
               run: |
-                docker run -d --name backend2 -p 8002:8000 ${{ secrets.DOCKERHUB_USERNAME }}/backend-service:latest
+                kubectl apply -f k8s/backend-deployment.yaml
+                kubectl apply -f k8s/backend-service.yaml
+                kubectl apply -f k8s/loadbalancer-deployment.yaml
+                kubectl apply -f k8s/loadbalancer-service.yaml
+                kubectl apply -f k8s/wazuh-agent-daemonset.yaml
 
-            - name: Run backend container 3
-              run: |
-                docker run -d --name backend3 -p 8003:8000 ${{ secrets.DOCKERHUB_USERNAME }}/backend-service:latest
+            - name: Install Helm
+              uses: azure/setup-helm@v3
 
-            - name: Run load balancer container
+            - name: Install Loki via Helm
               run: |
-                docker run -d --name load-balancer -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/load-balancer:latest
-      
+                helm repo add grafana https://grafana.github.io/helm-charts
+                helm repo update
+                kubectl create namespace logging --dry-run=client -o yaml | kubectl apply -f -
+                helm upgrade --install loki grafana/loki-stack \
+                  --namespace logging \
+                  --set promtail.enabled=true
+
+
             - name: Install ApacheBench
               run: |
                 sudo apt-get update
                 sudo apt-get install -y apache2-utils
 
             
-            #- name: Run load test with ApacheBench
-            #  run: |
-            #    ab -n 1000 -c 10 http://localhost:8000/
+            - name: Run load test with ApacheBench
+              run: |
+                ab -n 1000 -c 10 http://:8000/

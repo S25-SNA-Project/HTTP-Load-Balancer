@@ -4,6 +4,8 @@ metadata:
   name: loadbalancer-deployment
 spec:
   replicas: 1
+  nodeSelector:
+    role: balancer
   selector:
     matchLabels:
       app: loadbalancer
@@ -17,3 +19,11 @@ spec:
         image: wkwtfigo/load-balancer:latest
         ports:
         - containerPort: 8000
+        volumeMounts:
+        - name: app-logs
+          mountPath: /app/.logs
+      volumes:
+      - name: app-logs
+        hostPath:
+          path: /var/log/app-redirect-balancer
+          type: DirectoryOrCreate
