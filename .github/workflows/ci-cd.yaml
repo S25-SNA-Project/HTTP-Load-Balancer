@@ -66,10 +66,11 @@ jobs:
 
             - name: Set up kubeconfig
               run: |
-                mkdir -p $HOME/.kube
-                echo "${{ secrets.KUBECONFIG }}" | base64 -d > $HOME/.kube/config
-                chmod 600 $HOME/.kube/config
-
+                mkdir -p ~/.kube
+                echo "${KUBECONFIG}" > ~/.kube/config
+                chmod 600 ~/.kube/config
+              env:
+                KUBECONFIG: ${{ secrets.KUBECONFIG }}
             - name: Deploy backend, loadbalancer, wazuh
               run: |
                 kubectl apply -f k8s/backend-deployment.yaml
@@ -88,7 +89,8 @@ jobs:
                 kubectl create namespace logging --dry-run=client -o yaml | kubectl apply -f -
                 helm upgrade --install loki grafana/loki-stack \
                   --namespace logging \
-                  --set promtail.enabled=true
+                  --set promtail.enabled=true \
+                  --set loki.service.type=NodePort
 
 
             - name: Install ApacheBench
@@ -99,4 +101,4 @@ jobs:
             
             - name: Run load test with ApacheBench
               run: |
-                ab -n 1000 -c 10 http://:8000/
+                ab -n 1000 -c 10 http://151.242.43.104:8000/
