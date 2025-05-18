@@ -51,8 +51,7 @@ Logs are handled by a unified logging stack:
 
 ### 🔗 Live Demo
 
-Click to view the live system in action:  
-👉 [Live Demo Link](https://drive.google.com/drive/folders/1gO4E4cY0Ymfo0dKih3AW_IfRgMwiifla?usp=sharing)
+![Demo](demo.gif)
 
 ---
 

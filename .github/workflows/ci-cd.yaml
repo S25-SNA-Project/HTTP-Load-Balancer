@@ -116,4 +116,4 @@ jobs:
 
             - name: Run load test with ApacheBench
               run: |
-                ab -n 300 -c 10 http://151.242.43.104:8000/
+                ab -n 300 -c 10 http://45.38.170.48:8001/prime/1000
