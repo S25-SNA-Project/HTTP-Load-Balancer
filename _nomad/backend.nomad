@@ -11,6 +11,24 @@ job "backend" {
       value = "backend"
     }
 
+    task "init-dir" {
+      driver = "exec"
+
+      config {
+        command = "/bin/mkdir"
+        args    = ["-p", "/var/log/app-redirect-balancer"]
+      }
+
+      lifecycle {
+        hook = "prestart"
+      }
+
+      resources {
+        cpu    = 100
+        memory = 64
+      }
+    }
+
     task "backend" {
       driver = "docker"
 
