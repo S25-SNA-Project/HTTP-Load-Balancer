@@ -51,6 +51,7 @@ job "loadbalancer" {
     }
 
     network {
+      mode = "host"
       port "http" {
         static = 8000
         to     = 8000

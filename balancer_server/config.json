@@ -1,5 +1,5 @@
 {
-    "servers": [],
+    "servers": ["5.178.96.85", "5.178.96.228", "5.178.96.9", "109.206.236.112"],
     "balancing_port": 8000,
     "exposed_port": 8001,
     "type": "redirect",

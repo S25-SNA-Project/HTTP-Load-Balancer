@@ -44,17 +44,13 @@ job "backend" {
         cpu    = 500
         memory = 256
       }
-
-      # service {
-      #   name = "backend"
-      #   port = "http"
-      #   tags = ["backend"]
-      # }
     }
 
     network {
+      mode = "host"
       port "http" {
         static = 8080
+        to = 8080
       }
     }
   }

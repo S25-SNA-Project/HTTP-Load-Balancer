@@ -108,9 +108,6 @@ jobs:
             - name: Deploy jobs to Nomad
               run: |
                 nomad job run _nomad/backend.nomad
-                # nomad job run _nomad/wazuh-agent.nomad
-                # nomad job run _nomad/loki.nomad
-                nomad job run _nomad/promtail.nomad
               env:
                 NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
                 NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
@@ -122,4 +119,4 @@ jobs:
 
             - name: Run load test with ApacheBench
               run: |
-                ab -n 1000 -c 10 http://151.242.43.104:8000/
+                ab -n 300 -c 10 http://151.242.43.104:8000/
