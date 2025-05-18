@@ -67,6 +67,7 @@ jobs:
             - name: Set up Nomad CLI
               run: |
                 curl -fsSL https://releases.hashicorp.com/nomad/1.7.5/nomad_1.7.5_linux_amd64.zip -o nomad.zip
+                [ -d nomad ] && sudo rm -rf nomad
                 unzip -o nomad.zip
                 sudo mv nomad /usr/local/bin/
                 nomad --version
