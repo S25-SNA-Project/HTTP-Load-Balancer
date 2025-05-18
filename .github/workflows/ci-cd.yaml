@@ -67,7 +67,6 @@ jobs:
             - name: Set up Nomad CLI
               run: |
                 curl -fsSL https://releases.hashicorp.com/nomad/1.7.5/nomad_1.7.5_linux_amd64.zip -o nomad.zip
-                [ -d nomad ] && sudo rm -rf nomad
                 unzip -o nomad.zip
                 sudo mv nomad /usr/local/bin/
                 nomad --version
@@ -79,14 +78,17 @@ jobs:
 
             - name: Start balancer
               run: |
-                nomad job run nomad/loadbalancer.nomad
+                nomad job run _nomad/loadbalancer.nomad
+              env:
+                NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
+                NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
 
             - name: Deploy jobs to Nomad
               run: |
-                nomad job run nomad/backend.nomad
-                nomad job run nomad/wazuh-agent.nomad
-                nomad job run nomad/loki.nomad
-                nomad job run nomad/promtail.nomad
+                nomad job run _nomad/backend.nomad
+                nomad job run _nomad/wazuh-agent.nomad
+                nomad job run _nomad/loki.nomad
+                nomad job run _nomad/promtail.nomad
               env:
                 NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
                 NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
