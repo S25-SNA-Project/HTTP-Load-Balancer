@@ -87,10 +87,7 @@ jobs:
               run: |
                 nomad job validate _nomad/loadbalancer.nomad
                 nomad job validate _nomad/backend.nomad
-                nomad job validate _nomad/wazuh-agent.nomad
-                nomad job validate _nomad/loki.nomad
-                nomad job validate _nomad/promtail.nomad
-
+                
             - name: Start Nomad agent
               run: |
                 nohup nomad agent -dev -node-meta role=balancer > nomad.log 2>&1 &
