@@ -22,42 +22,43 @@ This system simulates a reverse proxy (load balancer) that distributes incoming 
 - **Centralized Control**: Despite the distributed backend architecture, the system maintains centralized control for optimal routing decisions.
 
 ---
+---
 # Technologies Used
 
-- <img src="https://img.shields.io/badge/-FastAPI-009688?style=flat&logo=fastapi&logoColor=white" alt="FastAPI" style="vertical-align: middle;"/>: Chosen for its lightweight and high-performance asynchronous HTTP server capabilities.
-
-
-- <img src="https://img.shields.io/badge/-httpx-5F5B5B?style=flat&logo=httpx&logoColor=white" alt="httpx" style="vertical-align: middle;"/>, <img src="https://img.shields.io/badge/-aiohttp-2C3E50?style=flat&logo=aiohttp&logoColor=white" alt="aiohttp" style="vertical-align: middle;"/>: Libraries for making asynchronous HTTP requests.
-
-
-- <img src="https://img.shields.io/badge/-Docker-2496ED?style=flat&logo=docker&logoColor=white" alt="Docker" style="vertical-align: middle;"/>: The system is containerized using Docker to ensure easy deployment and environment consistency.
+- <img src="https://img.shields.io/badge/-FastAPI-009688?style=flat&logo=fastapi&logoColor=white"/>: Lightweight and high-performance async HTTP server.
+- <img src="https://img.shields.io/badge/-httpx-5F5B5B?style=flat&logo=httpx&logoColor=white"/>, <img src="https://img.shields.io/badge/-aiohttp-2C3E50?style=flat&logo=aiohttp&logoColor=white"/>: Async HTTP clients for backend communication.
+- <img src="https://img.shields.io/badge/-Docker-2496ED?style=flat&logo=docker&logoColor=white"/>: Containerization.
+- <img src="https://img.shields.io/badge/-Nomad-00ACD7?style=flat&logo=hashicorp&logoColor=white"/>: Used for orchestrating all containers and services across nodes.
+- <img src="https://img.shields.io/badge/-Wazuh-800080?style=flat&logo=security&logoColor=white"/>: Security monitoring and agent-based system-level log collection.
+- <img src="https://img.shields.io/badge/-Loki-0D1117?style=flat&logo=grafana&logoColor=white"/>: Aggregation and storage of **application logs**.
+- <img src="https://img.shields.io/badge/-Grafana-F46800?style=flat&logo=grafana&logoColor=white"/>: Visualization of logs and metrics.
 
 ---
 
 ## Deployment
 
-Instead of using the local Docker-based setup, the system was deployed in a production-like environment using **Nomad** for container orchestration.
+The system was deployed using **Nomad** as the orchestration platform across multiple virtual machines.
 
 ### 🧩 Infrastructure Setup
 
-- **Nomad** was used as the orchestrator across all machines.
-- On **each node** in the cluster:
-  - 🛡 **Wazuh Agent** was installed to collect logs and monitor security.
-  - 📦 **Loki** was deployed to aggregate and store logs from the containers.
-- The application code (load balancer and backend services) was deployed **only on designated nodes** using Nomad job files with constraints.
-- Each component was managed through a declarative `.nomad` job specification.
+- All components were orchestrated using Nomad job specifications.
+- **Wazuh Agent** was deployed via Nomad on every node for system-level security monitoring.
+- **Loki** was also deployed through Nomad on every node, collecting and aggregating **application logs**.
+- The **application code** (load balancer and backend services) was deployed only to appropriate nodes using Nomad's job constraints to control placement.
+- Each component was declared in a dedicated `.nomad` job file for reproducibility.
 
 ### 📡 Observability
 
-All logs from the services are:
-- collected by **Wazuh Agent**,
-- streamed via **Promtail** (optional),
-- stored and visualized through **Loki** and **Grafana** on the central monitoring server.
+Logs are handled by a unified logging stack:
+- **Wazuh Agent** collects system-level and security-relevant logs.
+- **Loki** aggregates application-level logs (e.g., from the load balancer and backend containers).
+- Optionally, **Promtail** forwards logs to Loki.
+- **Grafana** provides a dashboard for viewing and analyzing logs in real time.
 
 ### 🔗 Live Demo
 
-You can view the deployed system in action here:  
-👉 **[Live Demo Link](https://demo-url.com)**
+Click to view the live system in action:  
+👉 [Live Demo Link](https://demo-url.com)
 
 ---
 
