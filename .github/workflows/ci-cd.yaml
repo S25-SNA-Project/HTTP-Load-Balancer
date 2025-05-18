@@ -64,41 +64,37 @@ jobs:
                 load: true
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/load-balancer:latest
 
-            - name: Set up kubeconfig
+            - name: Set up Nomad CLI
               run: |
-                mkdir -p ~/.kube
-                echo "${KUBECONFIG}" > ~/.kube/config
-                chmod 600 ~/.kube/config
+                curl -fsSL https://releases.hashicorp.com/nomad/1.7.5/nomad_1.7.5_linux_amd64.zip -o nomad.zip
+                unzip nomad.zip
+                sudo mv nomad /usr/local/bin/
+                nomad version
+
+            - name: Set Nomad address and token
+              run: |
+                echo "NOMAD_ADDR=${{ secrets.NOMAD_ADDR }}" >> $GITHUB_ENV
+                echo "NOMAD_TOKEN=${{ secrets.NOMAD_TOKEN }}" >> $GITHUB_ENV
+
+            - name: Start balancer
+              run: |
+                nomad job run nomad/loadbalancer.nomad
+
+            - name: Deploy jobs to Nomad
+              run: |
+                nomad job run nomad/backend.nomad
+                nomad job run nomad/wazuh-agent.nomad
+                nomad job run nomad/loki.nomad
+                nomad job run nomad/promtail.nomad
               env:
-                KUBECONFIG: ${{ secrets.KUBECONFIG }}
-            - name: Deploy backend, loadbalancer, wazuh
-              run: |
-                kubectl apply -f k8s/backend-deployment.yaml
-                kubectl apply -f k8s/backend-service.yaml
-                kubectl apply -f k8s/loadbalancer-deployment.yaml
-                kubectl apply -f k8s/loadbalancer-service.yaml
-                kubectl apply -f k8s/wazuh-agent-daemonset.yaml
-
-            - name: Install Helm
-              uses: azure/setup-helm@v3
-
-            - name: Install Loki via Helm
-              run: |
-                helm repo add grafana https://grafana.github.io/helm-charts
-                helm repo update
-                kubectl create namespace logging --dry-run=client -o yaml | kubectl apply -f -
-                helm upgrade --install loki grafana/loki-stack \
-                  --namespace logging \
-                  --set promtail.enabled=true \
-                  --set loki.service.type=NodePort
-
+                NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
+                NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
 
             - name: Install ApacheBench
               run: |
                 sudo apt-get update
                 sudo apt-get install -y apache2-utils
 
-            
             - name: Run load test with ApacheBench
               run: |
                 ab -n 1000 -c 10 http://151.242.43.104:8000/
