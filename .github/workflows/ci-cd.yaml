@@ -76,12 +76,27 @@ jobs:
                 echo "NOMAD_ADDR=${{ secrets.NOMAD_ADDR }}" >> $GITHUB_ENV
                 echo "NOMAD_TOKEN=${{ secrets.NOMAD_TOKEN }}" >> $GITHUB_ENV
 
-            - name: Start balancer
+            - name: Start Nomad agent
               run: |
+                nohup nomad agent -dev > nomad.log 2>&1 &
+                sleep 5
+                nomad status
+
+                        - name: Start balancer (debug)
+              run: |
+                set -x  # покажет все команды и их вывод
+                echo "=== Checking Nomad status ==="
+                nomad status || echo "Nomad not running or unreachable"
+
+                echo "=== Trying to run loadbalancer job ==="
                 nomad job run _nomad/loadbalancer.nomad
+
+                echo "=== Jobs after attempting to run ==="
+                nomad job status
               env:
                 NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
                 NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
+
 
             - name: Deploy jobs to Nomad
               run: |
