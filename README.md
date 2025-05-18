@@ -43,7 +43,6 @@ The system was deployed using **Nomad** as the orchestration platform across mul
 
 - All components were orchestrated using Nomad job specifications.
 - **Wazuh Agent** was deployed via Nomad on every node for system-level security monitoring.
-- **Loki** was also deployed through Nomad on every node, collecting and aggregating **application logs**.
 - The **application code** (load balancer and backend services) was deployed only to appropriate nodes using Nomad's job constraints to control placement.
 - Each component was declared in a dedicated `.nomad` job file for reproducibility.
 
@@ -51,9 +50,6 @@ The system was deployed using **Nomad** as the orchestration platform across mul
 
 Logs are handled by a unified logging stack:
 - **Wazuh Agent** collects system-level and security-relevant logs.
-- **Loki** aggregates application-level logs (e.g., from the load balancer and backend containers).
-- **Promtail** forwards logs to Loki.
-- **Grafana** provides a dashboard for viewing and analyzing logs in real time.
 
 ### 🔗 Live Demo
 
