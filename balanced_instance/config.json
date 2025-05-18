@@ -2,5 +2,5 @@
     "balancing_address": "151.242.43.104:8000",
     "balanced_port": 8080,
     "application_port": 8888,
-    "log_file": "./.logs/balanced.log"
+    "log_file": "/app/.logs/balanced.log"
 }

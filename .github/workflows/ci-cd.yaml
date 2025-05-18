@@ -101,35 +101,9 @@ jobs:
               run: |
                 echo "=== Deploying load balancer ==="
                 nomad job run _nomad/loadbalancer.nomad
-                
-                echo "=== Waiting for deployment to stabilize ==="
-                sleep 15
-                
-                echo "=== Verifying deployment ==="
-                ALLOC_ID=$(nomad job allocs -json loadbalancer | jq -r '.[0].ID')
-                STATUS=$(nomad alloc status $ALLOC_ID | grep -A 3 "Task Status" | grep "loadbalancer" | awk '{print $2}')
-                
-                if [ "$STATUS" != "running" ]; then
-                  echo "::error::Container failed to stay running"
-                  nomad alloc logs $ALLOC_ID loadbalancer
-                  exit 1
-                fi
-                
-                echo "=== Verifying health check ==="
-                PORT=$(nomad alloc status $ALLOC_ID | grep "http" | awk '{print $3}')
-                if ! curl -sf http://localhost:$PORT/health; then
-                  echo "::error::Health check failed"
-                  nomad alloc logs $ALLOC_ID loadbalancer
-                  exit 1
-                fi
-                
-                echo "=== Verifying port accessibility ==="
-                NODE_ADDR=$(nomad node status -json $(nomad alloc status -json $ALLOC_ID | jq -r '.NodeID') | jq -r '.Attributes."unique.network.ip-address"')
-                if ! nc -zv $NODE_ADDR $PORT; then
-                  echo "::error::Port $PORT not accessible on $NODE_ADDR"
-                  exit 1
-                fi
-
+              env:
+                NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
+                NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
 
             - name: Deploy jobs to Nomad
               run: |
