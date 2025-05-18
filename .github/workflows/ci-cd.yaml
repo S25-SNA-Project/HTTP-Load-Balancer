@@ -51,7 +51,7 @@ jobs:
               with:
                 context: balanced_instance
                 file: balanced_instance/Dockerfile
-                push: false
+                push: true
                 load: true
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend-service:latest
       
@@ -60,7 +60,7 @@ jobs:
               with:
                 context: balancer_server
                 file: balancer_server/Dockerfile
-                push: false
+                push: true
                 load: true
                 tags: ${{ secrets.DOCKERHUB_USERNAME }}/load-balancer:latest
 
