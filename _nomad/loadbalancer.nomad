@@ -5,11 +5,11 @@ job "loadbalancer" {
   group "loadbalancer-group" {
     count = 1
 
-    # constraint {
-    #  attribute = "${node.meta.role}"
-    #  operator  = "="
-    #  value     = "balancer"
-    #}
+    constraint {
+      attribute = "${node.meta.role}"
+      operator  = "="
+      value     = "balancer"
+    }
 
     task "loadbalancer" {
       driver = "docker"
