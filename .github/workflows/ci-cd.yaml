@@ -93,7 +93,7 @@ jobs:
 
             - name: Start Nomad agent
               run: |
-                nohup nomad agent -dev > nomad.log 2>&1 &
+                nohup nomad agent -dev -node-meta role=balancer > nomad.log 2>&1 &
                 sleep 5
                 nomad status
 
