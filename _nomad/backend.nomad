@@ -6,7 +6,7 @@ job "backend" {
     count = 3
 
     constraint {
-      attribute = "${node.meta.role}"
+      attribute = "${meta.role}"
       operator = "="
       value = "backend"
     }
@@ -27,11 +27,11 @@ job "backend" {
         memory = 256
       }
 
-      service {
-        name = "backend"
-        port = "http"
-        tags = ["backend"]
-      }
+      # service {
+      #   name = "backend"
+      #   port = "http"
+      #   tags = ["backend"]
+      # }
     }
 
     network {

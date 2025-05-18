@@ -6,7 +6,7 @@ job "loadbalancer" {
     count = 1
 
     constraint {
-      attribute = "${node.meta.role}"
+      attribute = "${meta.role}"
       operator  = "="
       value     = "balancer"
     }
@@ -27,11 +27,11 @@ job "loadbalancer" {
         memory = 256
       }
 
-      service {
-        name = "loadbalancer"
-        port = "http"
-        tags = ["loadbalancer"]
-      }
+      # service {
+      #   name = "loadbalancer"
+      #   port = "http"
+      #   tags = ["loadbalancer"]
+      # }
     }
 
     network {

@@ -73,10 +73,10 @@ EOF
         memory = 512
       }
 
-      service {
-        name = "loki"
-        port = "http"
-      }
+      # service {
+      #   name = "loki"
+      #   port = "http"
+      # }
     }
 
     network {

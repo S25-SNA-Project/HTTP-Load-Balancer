@@ -44,10 +44,10 @@ EOF
         memory = 256
       }
 
-      service {
-        name = "promtail"
-        port = "none"
-      }
+      # service {
+      #   name = "promtail"
+      #   port = "none"
+      # }
     }
 
     volume "local" {
