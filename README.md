@@ -30,8 +30,6 @@ This system simulates a reverse proxy (load balancer) that distributes incoming 
 - <img src="https://img.shields.io/badge/-Docker-2496ED?style=flat&logo=docker&logoColor=white"/>: Containerization.
 - <img src="https://img.shields.io/badge/-Nomad-00ACD7?style=flat&logo=hashicorp&logoColor=white"/>: Used for orchestrating all containers and services across nodes.
 - <img src="https://img.shields.io/badge/-Wazuh-800080?style=flat&logo=security&logoColor=white"/>: Security monitoring and agent-based system-level log collection.
-- <img src="https://img.shields.io/badge/-Loki-0D1117?style=flat&logo=grafana&logoColor=white"/>: Aggregation and storage of **application logs**.
-- <img src="https://img.shields.io/badge/-Grafana-F46800?style=flat&logo=grafana&logoColor=white"/>: Visualization of logs and metrics.
 
 ---
 
