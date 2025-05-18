@@ -82,7 +82,7 @@ jobs:
                 sleep 5
                 nomad status
 
-                        - name: Start balancer (debug)
+            - name: Start balancer (debug)
               run: |
                 set -x  # покажет все команды и их вывод
                 echo "=== Checking Nomad status ==="
