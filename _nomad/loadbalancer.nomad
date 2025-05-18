@@ -15,7 +15,7 @@ job "loadbalancer" {
       driver = "docker"
 
       config {
-        image = "wkwtfigo/load-balancer:latest"
+        image = "{{ env "DOCKERHUB_USERNAME" }}/load-balancer:latest"
         ports = ["http"]
         volumes = [
           "/var/log/app-redirect-balancer:/app/.logs"
