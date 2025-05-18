@@ -72,11 +72,6 @@ EOF
         cpu    = 300
         memory = 512
       }
-
-      # service {
-      #   name = "loki"
-      #   port = "http"
-      # }
     }
 
     network {

@@ -11,7 +11,7 @@ job "promtail" {
         args  = ["-config.file=/etc/promtail/promtail.yaml"]
         volumes = [
           "/var/log:/var/log",
-          "local/promtail:/etc/promtail"
+          "alloc/promtail:/etc/promtail"
         ]
       }
 
@@ -43,17 +43,6 @@ EOF
         cpu    = 200
         memory = 256
       }
-
-      # service {
-      #   name = "promtail"
-      #   port = "none"
-      # }
-    }
-
-    volume "local" {
-      type      = "host"
-      read_only = false
-      source    = "local"
     }
   }
 }

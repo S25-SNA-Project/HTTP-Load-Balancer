@@ -7,7 +7,7 @@ job "wazuh-agent" {
       driver = "docker"
 
       config {
-        image = "wazuh/wazuh-agent:4.7.0"
+        image = "wazuh/wazuh-agent:latest"
         privileged = true
         volumes = [
           "/proc:/host/proc:ro",
