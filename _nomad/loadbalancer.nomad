@@ -34,9 +34,9 @@ job "loadbalancer" {
 
       config {
         image = "wkwtfigo/load-balancer:latest"
-        ports = ["http"]
+        ports = ["http", "communication"]
         volumes = [
-          "/var/log/app-redirect-balancer:/app/.logs"
+          "/var/log/app-redirect-balancer/:/app/.logs/"
         ]
       }
 
@@ -54,6 +54,10 @@ job "loadbalancer" {
       port "http" {
         static = 8000
         to     = 8000
+      }
+      port "communication" {
+        static = 8001
+        to     = 8001
       }
     }
   }

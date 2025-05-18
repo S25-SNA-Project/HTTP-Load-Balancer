@@ -3,5 +3,5 @@
     "balancing_port": 8000,
     "exposed_port": 8001,
     "type": "redirect",
-    "log_file": "./.logs/balancer.log"
+    "log_file": "/app/.logs/balancer.log"
 }
