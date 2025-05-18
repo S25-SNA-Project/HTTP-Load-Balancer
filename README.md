@@ -52,7 +52,7 @@ The system was deployed using **Nomad** as the orchestration platform across mul
 Logs are handled by a unified logging stack:
 - **Wazuh Agent** collects system-level and security-relevant logs.
 - **Loki** aggregates application-level logs (e.g., from the load balancer and backend containers).
-- Optionally, **Promtail** forwards logs to Loki.
+- **Promtail** forwards logs to Loki.
 - **Grafana** provides a dashboard for viewing and analyzing logs in real time.
 
 ### 🔗 Live Demo
