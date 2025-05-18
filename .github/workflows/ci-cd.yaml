@@ -108,8 +108,8 @@ jobs:
             - name: Deploy jobs to Nomad
               run: |
                 nomad job run _nomad/backend.nomad
-                nomad job run _nomad/wazuh-agent.nomad
-                nomad job run _nomad/loki.nomad
+                # nomad job run _nomad/wazuh-agent.nomad
+                # nomad job run _nomad/loki.nomad
                 nomad job run _nomad/promtail.nomad
               env:
                 NOMAD_ADDR: ${{ secrets.NOMAD_ADDR }}
