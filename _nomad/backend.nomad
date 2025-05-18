@@ -40,11 +40,6 @@ job "backend" {
         ]
       }
 
-      lifecycle {
-        hook     = "task"
-        deadline = "10m"
-      }
-
       resources {
         cpu    = 500
         memory = 256
