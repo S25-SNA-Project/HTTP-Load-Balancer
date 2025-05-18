@@ -9,4 +9,4 @@ COPY . /app
 
 EXPOSE 8888 8080
 
-CMD ["sh", "-c", "uvicorn app1:app --host 0.0.0.0 --port 8888 & uvicorn app2:app --host 0.0.0.0 --port 8080"]
+CMD ["sh", "-c", "uvicorn app1:app --host 0.0.0.0 --port 8888 & python3 app2.py"]
