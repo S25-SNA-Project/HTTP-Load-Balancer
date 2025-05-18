@@ -82,8 +82,10 @@ Feel free to fork this repository and submit pull requests. Any contributions to
 >>### Ivan Lobazov
 >>- Telegram: [@XriXis](https://t.me/XriXis)
 >>- Email: [i.lobazov@innopolis.university](mailto:i.lobazov@innopolis.university)
-
-
+>
+>>### Elizaveta Zagurskih
+>>- Telegram: [@wkwthigo](https://t.me/wkwthigo)
+>>- Email: [e.zagurskih@innopolis.university](mailto:e.zagurskih@innopolis.university)
 ---
 
 ### License
